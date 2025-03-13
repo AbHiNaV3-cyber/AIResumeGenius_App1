@@ -4,14 +4,16 @@ import { Card } from "@/components/ui/card";
 interface ResumePreviewProps {
   content: ResumeContent | null;
   template: Template;
+  customColors?: TemplateStructure["colors"];
 }
 
-export default function ResumePreview({ content, template }: ResumePreviewProps) {
+export default function ResumePreview({ content, template, customColors }: ResumePreviewProps) {
   if (!content) return null;
 
   const structure = template.structure as TemplateStructure;
-  const primaryColor = structure.colors.primary;
-  const secondaryColor = structure.colors.secondary;
+  const colors = customColors || structure.colors;
+  const primaryColor = colors.primary;
+  const secondaryColor = colors.secondary;
 
   return (
     <Card className="p-8 bg-white shadow-lg">
@@ -34,7 +36,7 @@ export default function ResumePreview({ content, template }: ResumePreviewProps)
         <div>
           <h2
             className="text-lg font-semibold mb-2"
-            style={{ color: secondaryColor }}
+            style={{ color: colors.sections?.summary || secondaryColor }}
           >
             Professional Summary
           </h2>
@@ -45,7 +47,7 @@ export default function ResumePreview({ content, template }: ResumePreviewProps)
         <div>
           <h2
             className="text-lg font-semibold mb-3"
-            style={{ color: secondaryColor }}
+            style={{ color: colors.sections?.experience || secondaryColor }}
           >
             Work Experience
           </h2>
@@ -68,7 +70,7 @@ export default function ResumePreview({ content, template }: ResumePreviewProps)
         <div>
           <h2
             className="text-lg font-semibold mb-3"
-            style={{ color: secondaryColor }}
+            style={{ color: colors.sections?.education || secondaryColor }}
           >
             Education
           </h2>
@@ -90,7 +92,7 @@ export default function ResumePreview({ content, template }: ResumePreviewProps)
         <div>
           <h2
             className="text-lg font-semibold mb-2"
-            style={{ color: secondaryColor }}
+            style={{ color: colors.sections?.skills || secondaryColor }}
           >
             Skills
           </h2>

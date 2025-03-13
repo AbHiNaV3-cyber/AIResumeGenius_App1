@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ResumeContent, resumeContentSchema } from "@shared/schema";
@@ -22,16 +22,36 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Wand2 } from "lucide-react";
+import { ColorPicker } from "@/components/ui/color-picker";
+
+interface TemplateStructure {
+  colors: {
+    primary: string;
+    secondary: string;
+    sections?: {
+      summary?: string;
+      experience?: string;
+      education?: string;
+      skills?: string;
+    };
+  };
+}
+
+interface Template {
+  structure: TemplateStructure;
+}
 
 interface ResumeFormProps {
   initialContent: ResumeContent | null;
-  onSubmit: (content: ResumeContent) => void;
+  template: Template;
+  onSubmit: (content: ResumeContent, colors?: TemplateStructure["colors"]) => void;
   onGenerate: (data: {
     jobDescription: string;
     careerLevel: string;
     industry: string;
   }) => void;
   isGenerating: boolean;
+  initialColors?: TemplateStructure["colors"];
 }
 
 export default function ResumeForm({
@@ -39,8 +59,13 @@ export default function ResumeForm({
   onSubmit,
   onGenerate,
   isGenerating,
+  template,
+  initialColors,
 }: ResumeFormProps) {
   const [showAIForm, setShowAIForm] = useState(false);
+  const [colors, setColors] = useState<TemplateStructure["colors"]>(
+    initialColors || template.structure.colors
+  );
 
   const form = useForm<ResumeContent>({
     resolver: zodResolver(resumeContentSchema),
@@ -81,6 +106,17 @@ export default function ResumeForm({
       industry: "technology",
     },
   });
+
+  const handleColorChange = (key: string, value: string) => {
+    setColors((prev) => ({
+      ...prev,
+      [key]: value,
+      sections: {
+        ...prev.sections,
+        [key]: value,
+      },
+    }));
+  };
 
   return (
     <div className="space-y-6">
@@ -177,7 +213,7 @@ export default function ResumeForm({
 
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={form.handleSubmit(data => onSubmit(data, colors))}
           className="space-y-6"
         >
           <Card>
@@ -489,6 +525,47 @@ export default function ResumeForm({
                   </FormItem>
                 )}
               />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Color Customization</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ColorPicker
+                label="Primary Color"
+                value={colors.primary}
+                onChange={(value) => handleColorChange("primary", value)}
+              />
+              <ColorPicker
+                label="Secondary Color"
+                value={colors.secondary}
+                onChange={(value) => handleColorChange("secondary", value)}
+              />
+              <div className="space-y-4">
+                <h3 className="text-sm font-medium">Section Colors</h3>
+                <ColorPicker
+                  label="Summary Section"
+                  value={colors.sections?.summary || colors.secondary}
+                  onChange={(value) => handleColorChange("summary", value)}
+                />
+                <ColorPicker
+                  label="Experience Section"
+                  value={colors.sections?.experience || colors.secondary}
+                  onChange={(value) => handleColorChange("experience", value)}
+                />
+                <ColorPicker
+                  label="Education Section"
+                  value={colors.sections?.education || colors.secondary}
+                  onChange={(value) => handleColorChange("education", value)}
+                />
+                <ColorPicker
+                  label="Skills Section"
+                  value={colors.sections?.skills || colors.secondary}
+                  onChange={(value) => handleColorChange("skills", value)}
+                />
+              </div>
             </CardContent>
           </Card>
 

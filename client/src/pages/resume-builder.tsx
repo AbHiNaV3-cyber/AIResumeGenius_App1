@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useLocation, useLocation as useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import { Resume, ResumeContent, Template } from "@shared/schema";
+import { Resume, ResumeContent, Template, TemplateStructure } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -18,8 +18,9 @@ export default function ResumeBuilder() {
   const [resumeContent, setResumeContent] = useState<ResumeContent | null>(null);
   const [currentTab, setCurrentTab] = useState("template");
   const { toast } = useToast();
-  const [location] = useNavigate();
-  const resumeId = new URLSearchParams(location.split("?")[1]).get("id");
+  const [search] = useLocation();
+  const resumeId = new URLSearchParams(search.split("?")[1]).get("id");
+  const [customColors, setCustomColors] = useState<TemplateStructure["colors"] | undefined>();
 
   const { data: templates, isLoading: templatesLoading } = useQuery<Template[]>({
     queryKey: ["/api/templates"],
@@ -35,6 +36,7 @@ export default function ResumeBuilder() {
       templateId: number;
       title: string;
       content: ResumeContent;
+      customColors?: TemplateStructure["colors"];
     }) => {
       const res = await apiRequest("POST", "/api/resumes", data);
       return res.json();
@@ -67,7 +69,8 @@ export default function ResumeBuilder() {
   useEffect(() => {
     if (existingResume) {
       setSelectedTemplateId(existingResume.templateId);
-      setResumeContent(existingResume.content);
+      setResumeContent(existingResume.content as ResumeContent);
+      setCustomColors(existingResume.customColors);
       setCurrentTab("edit");
     }
   }, [existingResume]);
@@ -79,6 +82,9 @@ export default function ResumeBuilder() {
       </div>
     );
   }
+
+  const selectedTemplate = templates?.find((t) => t.id === selectedTemplateId);
+  if (!selectedTemplate) return null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -100,6 +106,7 @@ export default function ResumeBuilder() {
                   templateId: selectedTemplateId,
                   title: resumeContent.personalInfo.fullName + "'s Resume",
                   content: resumeContent,
+                  customColors,
                 })
               }
               disabled={createResumeMutation.isPending}
@@ -141,16 +148,20 @@ export default function ResumeBuilder() {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <ResumeForm
                   initialContent={resumeContent}
-                  onSubmit={setResumeContent}
+                  template={selectedTemplate}
+                  onSubmit={(content, colors) => {
+                    setResumeContent(content);
+                    setCustomColors(colors);
+                  }}
                   onGenerate={generateResumeMutation.mutate}
                   isGenerating={generateResumeMutation.isPending}
+                  initialColors={customColors}
                 />
                 <div className="hidden lg:block">
                   <ResumePreview
                     content={resumeContent}
-                    template={
-                      templates?.find((t) => t.id === selectedTemplateId)!
-                    }
+                    template={selectedTemplate}
+                    customColors={customColors}
                   />
                 </div>
               </div>
@@ -159,7 +170,8 @@ export default function ResumeBuilder() {
             <TabsContent value="preview">
               <ResumePreview
                 content={resumeContent}
-                template={templates?.find((t) => t.id === selectedTemplateId)!}
+                template={selectedTemplate}
+                customColors={customColors}
               />
             </TabsContent>
           </Tabs>

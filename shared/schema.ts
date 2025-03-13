@@ -12,7 +12,13 @@ export const templateStructureSchema = z.object({
   layout: z.enum(["classic", "modern"]),
   colors: z.object({
     primary: z.string(),
-    secondary: z.string()
+    secondary: z.string(),
+    sections: z.object({
+      summary: z.string(),
+      experience: z.string(),
+      education: z.string(),
+      skills: z.string()
+    }).optional()
   })
 });
 
@@ -30,6 +36,7 @@ export const resumes = pgTable("resumes", {
   title: text("title").notNull(),
   content: jsonb("content").notNull(),
   createdAt: text("created_at").notNull(),
+  customColors: jsonb("custom_colors").$type<z.infer<typeof templateStructureSchema>["colors"]>(),
 });
 
 export const insertUserSchema = createInsertSchema(users);
