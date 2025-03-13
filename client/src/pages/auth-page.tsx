@@ -9,7 +9,7 @@ import { insertUserSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { Loader2, FileText, Wand2, CheckCircle } from "lucide-react";
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
@@ -21,37 +21,55 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center p-4">
-      <div className="max-w-4xl w-full grid md:grid-cols-2 gap-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+      <div className="max-w-5xl w-full grid md:grid-cols-2 gap-8 items-center">
         <div className="space-y-6">
-          <div>
-            <h1 className="text-4xl font-bold text-blue-900">Resume Builder AI</h1>
-            <p className="mt-2 text-lg text-blue-700">Create professional resumes powered by AI</p>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="h-10 w-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+                <FileText className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Resume Builder AI
+              </h1>
+            </div>
+            <p className="text-xl text-gray-600">
+              Create professional resumes powered by artificial intelligence
+            </p>
           </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-700">1</span>
+
+          <div className="space-y-8">
+            <div className="relative">
+              <div className="absolute left-4 w-0.5 h-full bg-gradient-to-b from-blue-600 to-purple-600"></div>
+              <div className="space-y-6 pl-12">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <Wand2 className="h-6 w-6 text-blue-600" />
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      AI-Powered Content Generation
+                    </h3>
+                  </div>
+                  <p className="text-gray-600">
+                    Let AI help you craft the perfect professional summary and job descriptions
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-6 w-6 text-purple-600" />
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      ATS-Optimized Templates
+                    </h3>
+                  </div>
+                  <p className="text-gray-600">
+                    Stand out with modern designs that pass ATS systems
+                  </p>
+                </div>
               </div>
-              <p className="text-gray-700">Generate your resume with AI assistance</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-700">2</span>
-              </div>
-              <p className="text-gray-700">Optimize for ATS systems</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                <span className="text-blue-700">3</span>
-              </div>
-              <p className="text-gray-700">Choose from professional templates</p>
             </div>
           </div>
         </div>
 
-        <Card>
+        <Card className="backdrop-blur-sm bg-white/50">
           <CardHeader>
             <CardTitle>Welcome</CardTitle>
             <CardDescription>
@@ -64,11 +82,11 @@ export default function AuthPage() {
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="register">Register</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="login">
                 <LoginForm />
               </TabsContent>
-              
+
               <TabsContent value="register">
                 <RegisterForm />
               </TabsContent>
@@ -104,7 +122,7 @@ function LoginForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} className="bg-white" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -117,13 +135,17 @@ function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" {...field} className="bg-white" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+        <Button 
+          type="submit" 
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" 
+          disabled={loginMutation.isPending}
+        >
           {loginMutation.isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : null}
@@ -158,7 +180,7 @@ function RegisterForm() {
             <FormItem>
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} className="bg-white" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -171,13 +193,17 @@ function RegisterForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" {...field} />
+                <Input type="password" {...field} className="bg-white" />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={registerMutation.isPending}>
+        <Button 
+          type="submit" 
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" 
+          disabled={registerMutation.isPending}
+        >
           {registerMutation.isPending ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : null}
