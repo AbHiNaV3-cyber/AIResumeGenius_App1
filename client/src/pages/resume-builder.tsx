@@ -83,7 +83,11 @@ export default function ResumeBuilder() {
     );
   }
 
-  const selectedTemplate = templates?.find((t) => t.id === selectedTemplateId);
+  if (!templates || templates.length === 0) {
+    return <div>No templates available</div>;
+  }
+
+  const selectedTemplate = templates.find((t) => t.id === selectedTemplateId);
   if (!selectedTemplate) return null;
 
   return (
@@ -137,7 +141,7 @@ export default function ResumeBuilder() {
 
             <TabsContent value="template">
               <TemplateSelector
-                templates={templates || []}
+                templates={templates}
                 selectedId={selectedTemplateId}
                 onSelect={setSelectedTemplateId}
                 onNext={() => setCurrentTab("edit")}
